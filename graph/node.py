@@ -23,3 +23,5 @@ class Node:
     def degree(self) -> int:
         # TODO maybe only ingoing or outgoing
         return len(self.edges.items)
+    
+    # http://www.eaqua.net/doku/doku.php/signifikanz
