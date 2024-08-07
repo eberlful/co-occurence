@@ -56,7 +56,6 @@ class CoOccurence:
 
     # def add_document(self, sentences: list[str]):
     #     for sentence in sentences:
-            
 
     def create_n_grams(self, n: int, sentences: list[str]):
         # Create list of lists containing bigrams 
@@ -112,13 +111,9 @@ class CoOccurence:
     def add_sentences(self, sentences: list[str]):
         clean_sentences = []
         for sen in sentences:
-            # print(f"Senctence before: {sen}")
-            expanded_contractions = self.tokenizer.expand_contractions(sen)
-            # print(f"Senctence after contraction expand: {expanded_contractions}")
+            expanded_contractions = self.tokenizer.expand_contractions([sen])
             lemmatized_sen = self.tokenizer.lemmatize_words(expanded_contractions)
-            # print(f"Senctence after lemmatizing: {lemmatized_sen}")
             stopword_free_sen = self.tokenizer.remove_stop_words(lemmatized_sen)
-            # print(f"Senctence after stopword removing: {stopword_free_sen}")
 
             clean_sentences.append([word.lower() for word in stopword_free_sen])
 
@@ -195,7 +190,7 @@ class CoOccurence:
 
         # Create connections between nodes
         for edge in self.graph.edges:
-            G.add_edge(edge.source.word, edge.destination.word, weight=(1/edge.frequence))
+            G.add_edge(edge.source.word, edge.destination.word, weight=(1 / edge.frequency))
 
         # G.add_node("china", weight=100)
 

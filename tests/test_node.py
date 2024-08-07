@@ -2,8 +2,8 @@ import unittest
 
 from unittest.mock import Mock, patch
 
-from co_occurence.node import Node
-from co_occurence.edge import Edge
+from graph.node import Node
+from graph.edge import Edge
 
 class TestNode(unittest.TestCase):
 
@@ -12,7 +12,7 @@ class TestNode(unittest.TestCase):
         cls.sut = Node(word="any-word")
 
     def test_should_get_word(self):
-        self.assertEqual(self.sut.get_word(), "any-word")
+        self.assertEqual(self.sut.word, "any-word")
 
     def test_should_find_edge_if_exists(self):
         expected_edge = Edge(source=Mock(), destination=Mock())

@@ -1,14 +1,16 @@
-from graph.node import Node
-from graph.edge import Edge
+import logging
 from typing import List, Dict
 
-import logging
+from graph.edge import Edge, UndirectedEdge
+from graph.node import Node
+
 
 class Graph:
 
     def __init__(self) -> None:
         self.nodes: Dict[str, Node] = {}
         self.edges: List[Edge] = []
+        self.undirected_edges: List[UndirectedEdge] = []
 
     def add_bigram(self, bigram: tuple):
         logging.info(f"Add bigram: {bigram}")
@@ -17,9 +19,9 @@ class Graph:
         if len(bigram) != 2:
             raise Exception(f"The tuple is not a bigram. Tuple: {bigram}")
 
-        source_node = self._find_or_create_node(bigram[0])
-        destination_word = bigram[1]
-        second_edge = source_node.find_edge(destination_word)
+        source_node = self.__find_or_create_node(bigram[0])
+        destination_word: str = bigram[1]
+        second_edge = source_node.find_undirected_edge(destination_word)
         if second_edge:
             # TODO update weight
             logging.info(f"Strength the connection between '{source_node.word}' and '{destination_word}'")
@@ -36,19 +38,25 @@ class Graph:
                 self.nodes[destination_word] = destination_node
             
             # connect the nodes
-            edge = Edge(source=source_node, destination=destination_node)
-            source_node.add_edge(destination_word=destination_word, edge=edge)
-            destination_node.add_edge(destination_word=source_node.word, edge=edge)
-            self.edges.append(edge)
+            outgoing_edge = Edge(source=source_node, destination=destination_node)
+            undirected_edge = UndirectedEdge(nodes=(source_node, destination_node))
+            source_node.add_edge(other_word=destination_word, edge=outgoing_edge)
+            # destination_node.add_edge(destination_word=source_node.word, edge=outgoing_edge)
+            source_node.add_undirected_edge(other_word=destination_word, undirected_edge=undirected_edge)
+            destination_node.add_undirected_edge(other_word=source_node.word, undirected_edge=undirected_edge)
+
+            # TODO is this needed
+            self.edges.append(outgoing_edge)
+            self.undirected_edges.append(undirected_edge)
 
 
-    def _find_or_create_node(self, word: str) -> Node:
-        if not word in self.nodes:
-            logging.info(f"Could not find not for word: {word}")
+    def __find_or_create_node(self, word: str) -> Node:
+        if word not in self.nodes:
+            logging.info(f"Could not find node for word: {word}")
             new_node = Node(word)
             self.nodes[word] = new_node
             return new_node
         return self.nodes[word]
     
     def find_highest_connection(self) -> List[tuple]:
-        return [(edge.frequence, edge.source.word, edge.destination.word) for edge in sorted(self.edges, key=lambda edge: edge.frequence)[:10]]
+        return [(edge.frequency, edge.source.word, edge.destination.word) for edge in sorted(self.edges, key=lambda edge: edge.frequency)[:10]]
